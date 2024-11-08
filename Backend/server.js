@@ -167,4 +167,17 @@ const courseSchema = new mongoose.Mongoose.Schema({
 const Course = mongoose.model("Course", courseSchema);
 
 //Routes
+//Course Routes
+
+app.get('/api/courses', async(req, res) =>{
+    try{
+        const courses = await Course.find().sort({name: 1});
+        logger.info(`Retrieved ${courses.length} courses successfully`);
+        res.json(courses);
+    }
+    catch (error){
+        logger.error("Error fetching courses: ", error);
+        res.status(500).json({ message: error.message});
+    }
+})
 
