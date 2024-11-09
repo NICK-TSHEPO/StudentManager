@@ -305,7 +305,7 @@ app.get("/api/students/:id", async(req, res) =>{
     }
 });
 
-//Get student by search using name, email, or email
+//Get student by search using name, course, student number, or email
 app.get("/api/students/search", async(req, res) =>{
     try{
         const searchTerm = req.query.q;
@@ -315,6 +315,7 @@ app.get("/api/students/search", async(req, res) =>{
             $or: [
                 {name: { $regex: searchTerm, $options: "i"} },
                 {course: { $regex: searchTerm, $options: "i"} },
+                {studentNumber: { regex: searchTerm, $options: "i"}},
                 {email: { $regex: searchTerm, $options: "i" } },
             ],
         });
@@ -334,8 +335,9 @@ app.get("/api/students/search", async(req, res) =>{
 //Add student
 app.post("/api/students", async(req, res) =>{
     try{
+        req.body.studentNumber = generateStudentNumber();// Ensure student number is generated
         const student = new Student(req.body);
-        const savedStudent = await Student.save();
+        const savedStudent = await student.save();
         logger.info("New student created:", {
             studentId: savedStudent._id,
             fname: savedStudent.fname,
